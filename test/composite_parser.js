@@ -402,4 +402,45 @@ describe('Composite parser', function(){
             }
         });
     });
+
+    describe('VarArray parser', function()
+    {
+        it('should parse variable array', function () {
+            var parser = Parser.start()
+                .array('desc', {
+                    type: Parser.start()
+                        .uint8('size'), length: 6
+                })
+                .arrayChoice('data2', {
+                    array: 'desc',
+                    property: 'size',
+                    length: 5,
+                    choices: {
+                        1: Parser.start()
+                            .uint8('byte1'),
+                        2: Parser.start()
+                            .uint8('byte1')
+                            .uint8('byte2'),
+                        3: Parser.start()
+                            .uint8('byte1')
+                            .uint8('byte2')
+                            .uint8('byte3'),
+                        4: Parser.start()
+                            .uint8('byte1')
+                            .uint8('byte1')
+                            .uint8('byte3')
+                            .uint8('byte4'),
+                        5: Parser.start()
+                            .uint8('byte1')
+                            .uint8('byte2')
+                            .uint8('byte3')
+                            .uint8('byte4')
+                            .uint8('byte5')
+                    }
+                });
+            var buffer = new Buffer([1, 2, 3, 4, 5, 2, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 2, 2]);
+            //console.log(parser.getCode());
+            console.log(parser.parse(buffer));
+        });
+    });
 });
